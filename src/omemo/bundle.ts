@@ -176,7 +176,7 @@ function parseBundle(element: Element): OmemoBundle | null {
       },
       preKeys,
     };
-  } catch (err) {
+  } catch {
     return null;
   }
 }

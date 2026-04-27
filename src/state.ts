@@ -177,7 +177,7 @@ export function cleanupAccountState(accountId: string, log?: Logger): void {
   const xmpp = activeClients.get(accountId);
   if (xmpp) {
     try {
-      xmpp.stop();
+      void xmpp.stop();
     } catch {
       // Ignore stop errors during cleanup
     }

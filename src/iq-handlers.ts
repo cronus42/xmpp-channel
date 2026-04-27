@@ -7,7 +7,6 @@
  */
 
 import { xml } from "@xmpp/client";
-import type { Element } from "@xmpp/client";
 import type { client } from "@xmpp/client";
 import type { Logger } from "./types.js";
 import { getPluginVersion, PLUGIN_NAME, PLUGIN_OS } from "./xml-utils.js";

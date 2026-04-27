@@ -16,8 +16,6 @@ import { parsePepEvent, type PepItem } from "./pep.js";
 import {
   activeClients,
   reconnectStates,
-  RECONNECT_BASE_DELAY_MS,
-  cleanupAccountState,
   sentMessageIds,
 } from "./state.js";
 import { joinMuc, getPersistedRooms } from "./rooms.js";
@@ -29,7 +27,6 @@ import {
   abortReconnect,
   scheduleReconnect,
 } from "./reconnect.js";
-import { sendChatState, sendChatMarker } from "./chat-state.js";
 import { setupPresenceHandlers, setupMucInviteHandler } from "./stanza-handlers.js";
 import { setupIqHandlers } from "./iq-handlers.js";
 import { handleInboundMessage, handleInboundReaction } from "./inbound.js";
@@ -404,11 +401,11 @@ export async function startXmppConnection(ctx: GatewayStartContext): Promise<voi
       stopKeepalive(accountId);
       
       // Shutdown OMEMO
-      shutdownOmemo(accountId, log).catch((err) => {
+      void shutdownOmemo(accountId, log).catch((err) => {
         log?.warn?.(`[${accountId}] OMEMO shutdown error: ${err}`);
       });
       
-      xmpp.stop();
+      void xmpp.stop();
       activeClients.delete(accountId);
       
       setStatus?.({

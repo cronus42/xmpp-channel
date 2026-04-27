@@ -11,22 +11,18 @@ import type { Element } from "@xmpp/client";
 import type { Logger } from "../types.js";
 import { toBase64, fromBase64, getElementText } from "../xml-utils.js";
 import { OmemoStore } from "./store.js";
-import { publishDeviceId, fetchDeviceList } from "./device.js";
+import { publishDeviceId } from "./device.js";
 import { publishBundle, fetchBundle, buildBundleFromStore } from "./bundle.js";
-import { NS_OMEMO, NS_OMEMO_DEVICES, OMEMO_NAMESPACES, NS_OMEMO_LEGACY, NS_OMEMO_V2, type OmemoStoreData, type OmemoDevice } from "./types.js";
+import { NS_OMEMO, OMEMO_NAMESPACES, NS_OMEMO_V2, type OmemoDevice } from "./types.js";
 import { loadOmemoStoreData, saveOmemoStoreData } from "./persistence.js";
 import {
   getDeviceList,
-  handleDeviceListPepEvent,
   clearDeviceCache,
-  getDeviceCacheStats,
 } from "./device-cache.js";
 import {
   getRoomOccupantJids,
   isRoomOmemoCapable,
-  getRoomAnonymity,
   clearAllRoomStates,
-  getOccupantStats,
   getOccupantRealJid,
 } from "./muc-occupants.js";
 
@@ -802,7 +798,6 @@ export async function encryptMucOmemoMessage(
     // Unlike DMs, MUC messages are reflected back by the server, so we MUST
     // encrypt for our own device(s) to read the reflected message
     const ownDevices = (await getDeviceList(accountId, "", false, log)).slice(0, maxDevicesPerJid);
-    const ourDeviceId = store.getDeviceId();
     // For MUC, include ALL own devices including current one (for reflected messages)
     const ownDevicesToEncrypt = ownDevices;
 
@@ -1035,30 +1030,6 @@ async function encryptPayloadLegacy(
   return { ciphertext, authTag };
 }
 
-/**
- * Encrypt payload using AES-256-GCM
- */
-async function encryptPayload(
-  plaintext: string,
-  key: Uint8Array,
-  iv: Uint8Array
-): Promise<Uint8Array> {
-  const cryptoKey = await crypto.subtle.importKey(
-    "raw",
-    key.buffer.slice(key.byteOffset, key.byteOffset + key.byteLength) as ArrayBuffer,
-    { name: "AES-GCM" },
-    false,
-    ["encrypt"]
-  );
-
-  const encrypted = await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv: iv.buffer.slice(iv.byteOffset, iv.byteOffset + iv.byteLength) as ArrayBuffer, tagLength: 128 },
-    cryptoKey,
-    new TextEncoder().encode(plaintext)
-  );
-
-  return new Uint8Array(encrypted);
-}
 
 // =============================================================================
 // MESSAGE BUILDING

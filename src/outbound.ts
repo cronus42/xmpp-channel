@@ -3,7 +3,7 @@ import type { XmppConfig, SendResult, Logger } from "./types.js";
 import { getActiveClient } from "./monitor.js";
 import { bareJid, resolveServer } from "./config-schema.js";
 import { getUploadService, uploadAndGetUrl, buildOobElement, downloadUrl } from "./http-upload.js";
-import { isOmemoEnabled, encryptOmemoMessage, encryptMucOmemoMessage, buildOmemoMessageStanza, isRoomOmemoCapable } from "./omemo/index.js";
+import { isOmemoEnabled, encryptOmemoMessage, encryptMucOmemoMessage, buildOmemoMessageStanza } from "./omemo/index.js";
 import { isKnownMucRoom } from "./state.js";
 
 export interface ResolvedMedia {

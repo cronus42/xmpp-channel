@@ -6,7 +6,6 @@ import type {
   ResolvedXmppAccount,
   XmppAccountDescriptor,
   GatewayStartContext,
-  GatewayStopResult,
   SendResult,
   ChannelAccountSnapshot,
   ThreadingToolContext,
@@ -24,7 +23,7 @@ import { collectXmppStatusIssues } from "./status-issues.js";
 import { xmppDirectoryAdapter, xmppResolverAdapter } from "./directory.js";
 import { xmppMessageActions } from "./actions.js";
 import { xmppHeartbeatAdapter } from "./heartbeat.js";
-import { normalizeXmppTarget, looksLikeXmppJid, normalizeXmppMessagingTarget, normalizeAllowFrom, isSenderAllowed } from "./normalize.js";
+import { normalizeXmppTarget, looksLikeXmppJid, normalizeXmppMessagingTarget } from "./normalize.js";
 
 /**
  * Get XMPP config from OpenClaw config

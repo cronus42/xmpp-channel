@@ -445,8 +445,6 @@ async function deliverReply(
   // Build reply message with XEP-0461 (Message Replies) for proper threading
   const messageId = generateMessageId();
   const originalMsgId = message.id;
-  // XEP-0461: for groups, use full occupant JID (room/nick); for DMs, use bare JID
-  const originalSender = senderIdentity;
   
   // XEP-0461: reply element references the original message
   const replyChildren: ReturnType<typeof xml>[] = [xml("body", {}, textToSend)];

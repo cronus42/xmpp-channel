@@ -400,7 +400,7 @@ export function parseOobData(stanza: Element): { url: string; description?: stri
 /**
  * Download data from an HTTP(S) URL, following redirects.
  */
-export function downloadUrl(url: string, log?: Logger): Promise<{ data: Buffer; contentType: string; filename: string }> {
+export function downloadUrl(url: string, _log?: Logger): Promise<{ data: Buffer; contentType: string; filename: string }> {
   return new Promise((resolve, reject) => {
     const fetch = async (target: string, redirectCount: number): Promise<{ data: Buffer; contentType: string; filename: string }> => {
       const urlObj = new URL(target);

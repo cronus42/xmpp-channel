@@ -22,6 +22,15 @@ function toArrayBuffer(data: Uint8Array): ArrayBuffer {
   return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer;
 }
 
+function hasNumericByteLength(value: unknown): value is { byteLength: number } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "byteLength" in value &&
+    typeof (value as { byteLength: unknown }).byteLength === "number"
+  );
+}
+
 /**
  * Generate session key from JID and device ID
  * Uses '.' as separator to match Signal library's SignalProtocolAddress.toString()
@@ -599,11 +608,11 @@ export class OmemoStore {
     } else if (ArrayBuffer.isView(record)) {
       const view = record as unknown as Uint8Array;
       buf = view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength) as ArrayBuffer;
-    } else if (typeof (record as any).byteLength === 'number') {
+    } else if (hasNumericByteLength(record)) {
       try {
-        const len = (record as any).byteLength;
+        const len = record.byteLength;
         buf = new ArrayBuffer(len);
-        new Uint8Array(buf).set(new Uint8Array(record as ArrayBuffer));
+        new Uint8Array(buf).set(new Uint8Array(record as unknown as ArrayBuffer));
       } catch (e) {
         this.log?.warn?.(`[OMEMO] storeSession ${identifier}: failed to copy record - ${e}`);
         return;

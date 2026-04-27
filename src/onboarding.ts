@@ -1,4 +1,4 @@
-import type { OpenClawConfig, RuntimeEnv, WizardPrompter } from "openclaw/plugin-sdk";
+import type { OpenClawConfig, WizardPrompter } from "openclaw/plugin-sdk";
 import { formatDocsLink, DEFAULT_ACCOUNT_ID, normalizeAccountId, promptAccountId } from "openclaw/plugin-sdk";
 import type { ChannelOnboardingAdapter, ChannelOnboardingStatus, ChannelOnboardingResult } from "./types.js";
 import { listXmppAccountIds, resolveDefaultXmppAccountId, resolveXmppAccount } from "./accounts.js";
@@ -237,12 +237,12 @@ export const xmppOnboardingAdapter: ChannelOnboardingAdapter = {
 
   configure: async ({
     cfg,
-    runtime,
+    runtime: _runtime,
     prompter,
     options,
     accountOverrides,
     shouldPromptAccountIds,
-    forceAllowFrom,
+    forceAllowFrom: _forceAllowFrom,
   }): Promise<ChannelOnboardingResult> => {
     const overrideId = accountOverrides?.xmpp?.trim();
     let accountId = overrideId
