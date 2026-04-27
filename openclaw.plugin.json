@@ -233,5 +233,58 @@
         "description": "Per-group settings (keyed by room JID)"
       }
     }
+  },
+  "channelConfigs": {
+    "xmpp": {
+      "schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "jid": {
+            "type": "string",
+            "description": "Bot JID (e.g., bot@example.com)"
+          },
+          "password": {
+            "type": "string",
+            "description": "XMPP account password",
+            "sensitive": true
+          },
+          "server": {
+            "type": "string",
+            "description": "XMPP server hostname (defaults to JID domain)"
+          },
+          "port": {
+            "type": "number",
+            "default": 5222,
+            "description": "XMPP server port"
+          },
+          "resource": {
+            "type": "string",
+            "description": "XMPP resource identifier"
+          },
+          "allowFrom": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Bot owner JIDs (always have direct chat access, cannot be removed by guests)"
+          },
+          "groups": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Group chat rooms to auto-join"
+          },
+          "accounts": {
+            "type": "object",
+            "description": "Multi-account configuration"
+          },
+          "groupSettings": {
+            "type": "object",
+            "description": "Per-group settings (keyed by room JID)"
+          }
+        }
+      },
+      "label": "XMPP",
+      "description": "XMPP/Jabber channel plugin for Prosody, ejabberd, and other XMPP servers"
+    }
   }
 }
