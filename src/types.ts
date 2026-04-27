@@ -98,6 +98,10 @@ export interface XmppConfig {
   dmAllowlist?: string[];
   /** Allowed sender JIDs for groups (if different from allowFrom) */
   groupAllowFrom?: string[];
+  /** Allowed inviter JIDs for auto-joining MUC invites (defaults to allowFrom) */
+  inviteAllowFrom?: string[];
+  /** Allow SASL PLAIN fallback when stronger mechanisms are unavailable */
+  allowSaslPlain?: boolean;
   /** Group chat rooms to join */
   groups?: string[];
   /** Action configuration (reactions, etc.) */

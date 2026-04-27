@@ -70,6 +70,16 @@
         "items": { "type": "string" },
         "description": "Allowed sender JIDs in groups (falls back to allowFrom)"
       },
+      "inviteAllowFrom": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Allowed inviter JIDs for auto-joining MUC invites (defaults to allowFrom)"
+      },
+      "allowSaslPlain": {
+        "type": "boolean",
+        "default": false,
+        "description": "Allow SASL PLAIN authentication fallback"
+      },
       "groups": {
         "type": "array",
         "items": { "type": "string" },
@@ -162,6 +172,8 @@
             "allowFrom": { "type": "array", "items": { "type": "string" }, "description": "Bot owner JIDs (always have direct chat access)" },
             "dmAllowlist": { "type": "array", "items": { "type": "string" }, "description": "DM allowlist JIDs (when dmPolicy is 'allowlist')" },
             "groupAllowFrom": { "type": "array", "items": { "type": "string" }, "description": "Allowed group senders" },
+            "inviteAllowFrom": { "type": "array", "items": { "type": "string" }, "description": "Allowed inviter JIDs for MUC auto-join" },
+            "allowSaslPlain": { "type": "boolean", "default": false, "description": "Allow SASL PLAIN authentication fallback" },
             "groups": { "type": "array", "items": { "type": "string" }, "description": "Group chat rooms to join" },
             "actions": { "type": "object", "description": "Action configuration" },
             "messagePrefix": { "type": "string", "description": "Inbound message prefix" },

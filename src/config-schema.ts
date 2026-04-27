@@ -99,6 +99,11 @@ export const XmppAccountSchema = z.object({
 
   /** Allowed sender JIDs for groups */
   groupAllowFrom: z.array(z.string()).optional().describe("Allowed sender JIDs for groups (defaults to allowFrom, use * for all)"),
+  /** Allowed inviter JIDs for MUC auto-join */
+  inviteAllowFrom: z.array(z.string()).optional().describe("Allowed inviter JIDs for auto-joining MUC invites (defaults to allowFrom)"),
+
+  /** Allow SASL PLAIN fallback */
+  allowSaslPlain: z.boolean().optional().default(false).describe("Allow SASL PLAIN authentication fallback"),
 
   /** Group chat rooms to join */
   groups: z.array(z.string()).optional().describe("Group chat rooms to join on startup"),
