@@ -105,7 +105,7 @@ export function getPersistedRooms(accountId: string, log?: Logger): string[] {
  */
 export function looksLikeMucJid(jid: string): boolean {
   const domain = bareJid(jid).split("@")[1];
-  if (!domain) return false;
+  if (!domain) {return false;}
   return MUC_DOMAIN_PATTERNS.some((pattern) => domain.startsWith(pattern));
 }
 

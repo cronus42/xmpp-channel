@@ -347,6 +347,18 @@ async function deliverReply(
   const omemoEnabled = isOmemoEnabled(accountId);
   const shouldEncryptDm = !message.isGroup && omemoEnabled;
   const shouldEncryptMuc = message.isGroup && omemoEnabled && isRoomOmemoCapable(accountId, bareJid(replyTo));
+
+  if (message.isGroup && omemoEnabled && !shouldEncryptMuc) {
+    log?.warn?.(`[XMPP] Room ${bareJid(replyTo)} is not OMEMO-capable; blocking plaintext group reply`);
+    const warningStanza = xml(
+      "message",
+      { to: replyTo, type: "groupchat", id: generateMessageId() },
+      xml("body", {}, "⚠️ OMEMO is enabled, but this room is not OMEMO-capable. Message not sent for security.")
+    );
+    await xmppClient.send(warningStanza);
+    await sendChatState(accountId, replyTo, "active", log);
+    return;
+  }
   
   if (shouldEncryptDm) {
     // Encrypt with OMEMO for DMs

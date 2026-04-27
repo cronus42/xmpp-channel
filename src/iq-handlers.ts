@@ -25,12 +25,12 @@ export function setupIqHandlers(
   log?: Logger
 ): void {
   xmpp.on("stanza", async (stanza) => {
-    if (!stanza.is("iq")) return;
-    if (stanza.attrs.type !== "get") return;
+    if (!stanza.is("iq")) {return;}
+    if (stanza.attrs.type !== "get") {return;}
 
     const from = stanza.attrs.from;
     const id = stanza.attrs.id;
-    if (!from || !id) return;
+    if (!from || !id) {return;}
 
     // XEP-0092: Software Version
     const versionQuery = stanza.getChild("query", NS_VERSION);

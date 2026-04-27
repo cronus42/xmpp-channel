@@ -151,9 +151,9 @@ export function xmppChannelConfigSchema() {
  * Extract server from JID if not explicitly provided
  */
 export function resolveServer(config: { jid: string; server?: string }): string {
-  if (config.server) return config.server;
+  if (config.server) {return config.server;}
   const domain = config.jid.split("@")[1];
-  if (!domain) throw new Error(`Invalid JID: ${config.jid}`);
+  if (!domain) {throw new Error(`Invalid JID: ${config.jid}`);}
   return domain;
 }
 
@@ -162,7 +162,7 @@ export function resolveServer(config: { jid: string; server?: string }): string 
  */
 export function extractUsername(jid: string): string {
   const username = jid.split("@")[0];
-  if (!username) throw new Error(`Invalid JID: ${jid}`);
+  if (!username) {throw new Error(`Invalid JID: ${jid}`);}
   return username;
 }
 
@@ -178,9 +178,9 @@ export function bareJid(jid: string): string {
  */
 export function isCredentialReference(value: string | undefined | null): boolean {
   const raw = String(value ?? "").trim();
-  if (!raw) return false;
-  if (raw.startsWith("env:")) return true;
-  if (/^\$\{[A-Z0-9_]+\}$/.test(raw)) return true;
+  if (!raw) {return false;}
+  if (raw.startsWith("env:")) {return true;}
+  if (/^\$\{[A-Z0-9_]+\}$/.test(raw)) {return true;}
   return false;
 }
 

@@ -43,7 +43,7 @@ let signalLoadError: Error | null = null;
  */
 async function loadSignalLib(): Promise<SignalLib> {
   if (signalLoaded) {
-    if (signalLoadError) throw signalLoadError;
+    if (signalLoadError) {throw signalLoadError;}
     return signalLib;
   }
   
@@ -448,9 +448,9 @@ export class OmemoStore {
     if (existing) {
       const existingArr = new Uint8Array(existing);
       const newArr = new Uint8Array(identityKey);
-      if (existingArr.length !== newArr.length) return true;
+      if (existingArr.length !== newArr.length) {return true;}
       for (let i = 0; i < existingArr.length; i++) {
-        if (existingArr[i] !== newArr[i]) return true;
+        if (existingArr[i] !== newArr[i]) {return true;}
       }
       return false;
     }
@@ -462,7 +462,7 @@ export class OmemoStore {
    */
   async loadPreKey(keyId: number): Promise<{ pubKey: ArrayBuffer; privKey: ArrayBuffer } | undefined> {
     const key = this.preKeys.get(keyId);
-    if (!key) return undefined;
+    if (!key) {return undefined;}
     return {
       pubKey: toArrayBuffer(key.publicKey),
       privKey: toArrayBuffer(key.privateKey),
@@ -498,7 +498,7 @@ export class OmemoStore {
    * Load signed pre-key
    */
   async loadSignedPreKey(keyId: number): Promise<{ pubKey: ArrayBuffer; privKey: ArrayBuffer } | undefined> {
-    if (!this.signedPreKey || this.signedPreKey.id !== keyId) {
+    if (this.signedPreKey?.id !== keyId) {
       return undefined;
     }
     return {

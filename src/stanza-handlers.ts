@@ -26,12 +26,12 @@ export function setupPresenceHandlers(
 ): void {
   const ownerAllowList = normalizeAllowFrom(config.allowFrom);
   xmpp.on("stanza", async (stanza) => {
-    if (!stanza.is("presence")) return;
+    if (!stanza.is("presence")) {return;}
     
     const type = stanza.attrs.type;
     const from = stanza.attrs.from;
     
-    if (!from) return;
+    if (!from) {return;}
     
     const fromBare = bareJid(from);
     
@@ -142,17 +142,17 @@ export function setupMucInviteHandler(
 ): void {
   const inviteAllowList = normalizeAllowFrom(config.inviteAllowFrom ?? config.allowFrom);
   xmpp.on("stanza", async (stanza) => {
-    if (!stanza.is("message")) return;
+    if (!stanza.is("message")) {return;}
     
     const from = stanza.attrs.from;
-    if (!from) return;
+    if (!from) {return;}
     
     // Check for MUC mediated invite: <x xmlns="http://jabber.org/protocol/muc#user"><invite from="...">...
     const mucUserX = stanza.getChild("x", "http://jabber.org/protocol/muc#user");
-    if (!mucUserX) return;
+    if (!mucUserX) {return;}
     
     const invite = mucUserX.getChild("invite");
-    if (!invite) return;
+    if (!invite) {return;}
     
     const roomJid = bareJid(from);
     const inviterJid = bareJid(invite.attrs.from || "");

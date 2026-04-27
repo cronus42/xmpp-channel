@@ -71,7 +71,7 @@ function parseXmlElement(xmlPayload: string): Element | null {
       failed = true;
     });
     parser.end(xmlPayload);
-    if (failed) return null;
+    if (failed) {return null;}
     return root;
   } catch {
     return null;
@@ -94,17 +94,17 @@ function parseSceWrappedReaction(body: string): { reactedMessageId: string; emoj
     return null;
   }
   const envelope = parseXmlElement(body);
-  if (!envelope) return null;
-  if (envelope.name !== "envelope") return null;
-  if (envelope.attrs?.xmlns !== NS_SCE) return null;
+  if (!envelope) {return null;}
+  if (envelope.name !== "envelope") {return null;}
+  if (envelope.attrs?.xmlns !== NS_SCE) {return null;}
 
   const content = envelope.getChild("content", NS_SCE) ?? envelope.getChild("content");
-  if (!content) return null;
+  if (!content) {return null;}
   const reactions = content.getChild("reactions", NS_REACTIONS) ?? content.getChild("reactions");
-  if (!reactions) return null;
+  if (!reactions) {return null;}
 
   const reactedMessageId = sanitizeReactionMessageId(reactions.attrs?.id);
-  if (!reactedMessageId) return null;
+  if (!reactedMessageId) {return null;}
 
   const emojis = reactions
     .getChildren("reaction")
@@ -350,7 +350,7 @@ export async function startXmppConnection(ctx: GatewayStartContext): Promise<voi
     // Join persisted rooms (from previous invites)
     const persistedRooms = getPersistedRooms(accountId, log);
     for (const roomJid of persistedRooms) {
-      if (config.groups?.includes(roomJid)) continue;
+      if (config.groups?.includes(roomJid)) {continue;}
       log?.info?.(`[${accountId}] Rejoining persisted room: ${roomJid}`);
       await joinMuc(xmpp, roomJid, nickname, log, accountId, true);
     }
@@ -395,7 +395,7 @@ export async function startXmppConnection(ctx: GatewayStartContext): Promise<voi
     
     const cleanup = () => {
       const state = reconnectStates.get(accountId);
-      if (state?.aborted) return;
+      if (state?.aborted) {return;}
       
       abortReconnect(accountId);
       
@@ -444,7 +444,7 @@ function setupMessageHandler(
   xmpp.on("stanza", async (stanza) => {
     log?.debug?.(`[${accountId}] XMPP stanza received: attrs=${JSON.stringify(stanza.attrs)}`);
     
-    if (!stanza.is("message")) return;
+    if (!stanza.is("message")) {return;}
 
     // Check for PEP events first
     const pepEvent = parsePepEvent(stanza as Element);
@@ -646,14 +646,14 @@ function setupMessageHandler(
       return;
     }
     
-    if (!body) return;
+    if (!body) {return;}
 
     // History check already done earlier (before OMEMO decryption)
 
     const to = stanza.attrs.to;
     const id = stanza.attrs.id || `msg_${Date.now()}`;
 
-    let senderJid = from;
+    const senderJid = from;
     let roomJid: string | undefined;
     let senderNick: string | undefined;
 

@@ -9,7 +9,7 @@ import { getActiveClient } from "./monitor.js";
 import { resolveXmppAccount } from "./accounts.js";
 import { bareJid } from "./config-schema.js";
 import { xml } from "@xmpp/client";
-import { getServerMessageId, getRecentInboundMessageId } from "./state.js";
+import { getServerMessageId, getRecentInboundMessageId, isKnownMucRoom } from "./state.js";
 import {
   isOmemoEnabled,
   encryptOmemoMessage,
@@ -38,7 +38,7 @@ function createActionGate(
   actions?: Record<string, boolean>
 ): (action: string) => boolean {
   return (action: string) => {
-    if (!actions) return false;
+    if (!actions) {return false;}
     return actions[action] === true;
   };
 }
@@ -111,8 +111,8 @@ export async function handleXmppAction(params: {
     return jsonResult({ ok: false, error: "XMPP client not connected" });
   }
 
-  // Check if targetJid is in groups list
-  const isMuc = Boolean(config.groups?.some((room) => bareJid(room) === bareJid(targetJid)));
+  // Check if targetJid is a known MUC room (configured or dynamically joined)
+  const isMuc = isKnownMucRoom(account.accountId, targetJid, config.groups);
 
   // Determine message type: groupchat for MUC rooms, chat for DMs
   const msgType = isMuc ? "groupchat" : "chat";

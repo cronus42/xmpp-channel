@@ -31,7 +31,7 @@ import { normalizeXmppTarget, looksLikeXmppJid, normalizeXmppMessagingTarget, no
  */
 function getConfig(cfg: OpenClawConfig, accountId?: string): XmppConfig {
   const xmppCfg = cfg?.channels?.xmpp as XmppConfig | undefined;
-  if (!xmppCfg) return {} as XmppConfig;
+  if (!xmppCfg) {return {} as XmppConfig;}
 
   if (accountId && xmppCfg.accounts?.[accountId]) {
     return { ...xmppCfg, ...xmppCfg.accounts[accountId] };
@@ -225,7 +225,7 @@ export const xmppPlugin = {
       // Get group settings (keyed by room JID or "*" for default)
       const groupsConfig: Record<string, XmppGroupConfig> | undefined = accountConfig.groupSettings;
       
-      if (!groupsConfig) return undefined;
+      if (!groupsConfig) {return undefined;}
       
       // First try specific group, then fallback to "*" default
       const groupId = params.groupId ?? undefined;
@@ -242,11 +242,11 @@ export const xmppPlugin = {
           senderUsername: params.senderUsername ?? undefined,
           senderE164: params.senderE164 ?? undefined,
         });
-        if (senderPolicy) return senderPolicy;
+        if (senderPolicy) {return senderPolicy;}
       }
       
       // 2. Check group-level tools policy
-      if (groupConfig?.tools) return groupConfig.tools;
+      if (groupConfig?.tools) {return groupConfig.tools;}
       
       // 3. Check sender-specific policy for default group
       if (defaultConfig?.toolsBySender) {
@@ -257,11 +257,11 @@ export const xmppPlugin = {
           senderUsername: params.senderUsername ?? undefined,
           senderE164: params.senderE164 ?? undefined,
         });
-        if (senderPolicy) return senderPolicy;
+        if (senderPolicy) {return senderPolicy;}
       }
       
       // 4. Check default group tools policy
-      if (defaultConfig?.tools) return defaultConfig.tools;
+      if (defaultConfig?.tools) {return defaultConfig.tools;}
       
       return undefined;
     },
@@ -271,7 +271,7 @@ export const xmppPlugin = {
   mentions: {
     stripPatterns: ({ ctx }: { ctx: { To?: string } }) => {
       const selfJid = ctx.To?.replace(/^xmpp:/, "") || "";
-      if (!selfJid) return [];
+      if (!selfJid) {return [];}
       const escaped = escapeRegExp(bareJid(selfJid));
       return [escaped, `@${escaped}`];
     },
@@ -423,7 +423,7 @@ export const xmppPlugin = {
           // Not a valid URL — treat as local file path
           const { readLocalFile } = await import("./file-read.js");
           const result = readLocalFile(mediaUrl, typedLog, { accountId: accountId ?? undefined, config });
-          if (!result) throw new Error(`File not found: ${mediaUrl}`);
+          if (!result) {throw new Error(`File not found: ${mediaUrl}`);}
           resolvedMedia = result;
         }
         

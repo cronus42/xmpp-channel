@@ -61,7 +61,7 @@ function writeFileAtomicSecure(filePath: string, content: string): void {
 
 function getOrCreateMasterKey(log?: Logger): Buffer {
   const fromEnv = process.env.OPENCLAW_XMPP_KEYSTORE_KEY;
-  if (fromEnv && fromEnv.trim()) {
+  if (fromEnv?.trim()) {
     return Buffer.from(fromEnv.trim(), "utf-8");
   }
 
@@ -112,7 +112,7 @@ function decryptStorePayload(payload: EncryptedOmemoFileStore, log?: Logger): Om
 }
 
 function isEncryptedStore(data: unknown): data is EncryptedOmemoFileStore {
-  if (!data || typeof data !== "object") return false;
+  if (!data || typeof data !== "object") {return false;}
   const candidate = data as Partial<EncryptedOmemoFileStore>;
   return candidate.version === 1
     && candidate.algorithm === "aes-256-gcm"

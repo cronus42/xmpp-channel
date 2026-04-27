@@ -33,19 +33,19 @@ function normalizeXmppBareJidForMatch(jid: string): string {
  */
 export function looksLikeXmppJid(id: string): boolean {
   const trimmed = id.trim();
-  if (!trimmed) return false;
+  if (!trimmed) {return false;}
   
   // Must have @ symbol
-  if (!trimmed.includes("@")) return false;
+  if (!trimmed.includes("@")) {return false;}
   
   // Must have domain after @
   const parts = trimmed.split("@");
-  if (parts.length !== 2) return false;
-  if (!parts[0] || !parts[1]) return false;
+  if (parts.length !== 2) {return false;}
+  if (!parts[0] || !parts[1]) {return false;}
   
   // Domain should have at least one dot or be localhost
   const domain = parts[1].split("/")[0];
-  if (domain !== "localhost" && !domain.includes(".")) return false;
+  if (domain !== "localhost" && !domain.includes(".")) {return false;}
   
   return true;
 }
@@ -55,7 +55,7 @@ export function looksLikeXmppJid(id: string): boolean {
  */
 export function isXmppMucJid(jid: string, mucDomains?: string[]): boolean {
   const domain = bareJid(jid).split("@")[1];
-  if (!domain) return false;
+  if (!domain) {return false;}
   
   // Common MUC domain patterns
   const mucPatterns = [
@@ -79,12 +79,12 @@ export function isXmppMucJid(jid: string, mucDomains?: string[]): boolean {
  * Normalize XMPP target for messaging
  */
 export function normalizeXmppTarget(raw: string | null | undefined): string | null {
-  if (!raw) return null;
+  if (!raw) {return null;}
   
   const target = raw.trim().replace(JID_PREFIX_RE, "");
   
   // Validate
-  if (!looksLikeXmppJid(target)) return null;
+  if (!looksLikeXmppJid(target)) {return null;}
   
   // Return canonical bare JID
   try {
@@ -163,8 +163,8 @@ export function normalizeAllowFrom(list?: string[]): NormalizedAllowFrom {
  * Check if sender is allowed based on normalized allowFrom
  */
 export function isSenderAllowed(allowFrom: NormalizedAllowFrom, senderJid: string): boolean {
-  if (allowFrom.hasWildcard) return true;
-  if (!senderJid.trim()) return false;
+  if (allowFrom.hasWildcard) {return true;}
+  if (!senderJid.trim()) {return false;}
   try {
     const normalized = normalizeXmppBareJidForMatch(senderJid);
     return allowFrom.entries.includes(normalized);

@@ -15,7 +15,7 @@ function getRootConfig(cfg: OpenClawConfig): XmppConfig | undefined {
  */
 function getAccountConfig(cfg: OpenClawConfig, accountId: string): XmppConfig | undefined {
   const root = getRootConfig(cfg);
-  if (!root) return undefined;
+  if (!root) {return undefined;}
 
   if (accountId === DEFAULT_ACCOUNT_ID) {
     return root;
@@ -29,7 +29,7 @@ function getAccountConfig(cfg: OpenClawConfig, accountId: string): XmppConfig | 
  */
 export function listXmppAccountIds(cfg: OpenClawConfig): string[] {
   const root = getRootConfig(cfg);
-  if (!root) return [];
+  if (!root) {return [];}
 
   const accountIds: string[] = [];
 

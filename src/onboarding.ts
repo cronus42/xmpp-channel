@@ -51,8 +51,8 @@ async function promptXmppCredentials(
     initialValue: existing?.config?.jid,
     validate: (value) => {
       const raw = String(value ?? "").trim();
-      if (!raw) return "JID is required";
-      if (!raw.includes("@")) return "JID must include @ symbol";
+      if (!raw) {return "JID is required";}
+      if (!raw.includes("@")) {return "JID must include @ symbol";}
       return undefined;
     },
   });
@@ -63,7 +63,7 @@ async function promptXmppCredentials(
     initialValue: existing?.config?.password,
     validate: (value) => {
       const raw = String(value ?? "").trim();
-      if (!raw) return "Password reference is required";
+      if (!raw) {return "Password reference is required";}
       if (!isCredentialReference(raw)) {
         return "Use env:VAR or ${VAR}; plaintext passwords are not allowed";
       }

@@ -284,12 +284,12 @@ export function isOmemoEncrypted(stanza: Element): boolean {
 function isPreKeyElement(keyEl: Element, namespace: string): boolean {
   // Legacy format: prekey attribute
   const prekey = keyEl.attrs?.prekey as string | undefined;
-  if (prekey === "true" || prekey === "1") return true;
+  if (prekey === "true" || prekey === "1") {return true;}
   
   // OMEMO 2.0: kex attribute (key exchange)
   if (namespace === NS_OMEMO_V2) {
     const kex = keyEl.attrs?.kex as string | undefined;
-    if (kex === "true" || kex === "1") return true;
+    if (kex === "true" || kex === "1") {return true;}
   }
   
   return false;
@@ -317,7 +317,7 @@ export async function decryptOmemoMessage(
   }
 
   const encryptedInfo = getOmemoEncrypted(stanza);
-  if (!encryptedInfo) return null;
+  if (!encryptedInfo) {return null;}
   
   const { element: encrypted, namespace } = encryptedInfo;
   const isV2 = namespace === NS_OMEMO_V2;
@@ -364,7 +364,7 @@ export async function decryptOmemoMessage(
         ourKeyElement = keyElements.find(
           (k) => parseInt(k.attrs?.rid, 10) === ourDeviceId
         );
-        if (ourKeyElement) break;
+        if (ourKeyElement) {break;}
       }
     } else {
       ourKeyElement = keyElements.find(

@@ -91,7 +91,7 @@ export async function discoverUploadService(
     // Check each item for HTTP Upload feature
     for (const item of items) {
       const jid = item.attrs.jid;
-      if (!jid) continue;
+      if (!jid) {continue;}
 
       const infoId = iqId();
       const infoIq = xml("iq", { type: "get", to: jid, id: infoId },
@@ -103,7 +103,7 @@ export async function discoverUploadService(
         await client.send(infoIq);
         const infoResponse = await infoPromise;
 
-        if (infoResponse.attrs.type !== "result") continue;
+        if (infoResponse.attrs.type !== "result") {continue;}
 
         const infoQuery = infoResponse.getChild("query", "http://jabber.org/protocol/disco#info");
         const features = infoQuery?.getChildren("feature") || [];
@@ -135,7 +135,7 @@ export async function discoverUploadService(
         await client.send(infoIq);
         const infoResponse = await infoPromise;
 
-        if (infoResponse.attrs.type !== "result") continue;
+        if (infoResponse.attrs.type !== "result") {continue;}
 
         const infoQuery = infoResponse.getChild("query", "http://jabber.org/protocol/disco#info");
         const features = infoQuery?.getChildren("feature") || [];
@@ -386,10 +386,10 @@ export function buildOobElement(url: string, description?: string): Element {
  */
 export function parseOobData(stanza: Element): { url: string; description?: string } | null {
   const oob = stanza.getChild("x", NS_OOB);
-  if (!oob) return null;
+  if (!oob) {return null;}
 
   const url = oob.getChildText("url");
-  if (!url) return null;
+  if (!url) {return null;}
 
   return {
     url,
@@ -463,23 +463,23 @@ const MAX_REDIRECTS = 5;
 
 function isPrivateIpv4(ip: string): boolean {
   const parts = ip.split(".").map((p) => Number.parseInt(p, 10));
-  if (parts.length !== 4 || parts.some((p) => Number.isNaN(p) || p < 0 || p > 255)) return true;
+  if (parts.length !== 4 || parts.some((p) => Number.isNaN(p) || p < 0 || p > 255)) {return true;}
   const [a, b] = parts;
-  if (a === 10) return true;
-  if (a === 127) return true;
-  if (a === 169 && b === 254) return true;
-  if (a === 172 && b >= 16 && b <= 31) return true;
-  if (a === 192 && b === 168) return true;
-  if (a === 0) return true;
+  if (a === 10) {return true;}
+  if (a === 127) {return true;}
+  if (a === 169 && b === 254) {return true;}
+  if (a === 172 && b >= 16 && b <= 31) {return true;}
+  if (a === 192 && b === 168) {return true;}
+  if (a === 0) {return true;}
   return false;
 }
 
 function isPrivateIpv6(ip: string): boolean {
   const normalized = ip.toLowerCase();
-  if (normalized === "::1") return true;
-  if (normalized.startsWith("fe80:")) return true; // link-local
-  if (normalized.startsWith("fc") || normalized.startsWith("fd")) return true; // unique local
-  if (normalized === "::") return true;
+  if (normalized === "::1") {return true;}
+  if (normalized.startsWith("fe80:")) {return true;} // link-local
+  if (normalized.startsWith("fc") || normalized.startsWith("fd")) {return true;} // unique local
+  if (normalized === "::") {return true;}
   return false;
 }
 
@@ -488,8 +488,8 @@ async function ensurePublicTarget(urlObj: URL): Promise<void> {
     throw new Error(`Unsupported protocol for media download: ${urlObj.protocol}`);
   }
   const host = urlObj.hostname.trim().toLowerCase();
-  if (!host) throw new Error("Missing hostname in media URL");
-  if (host === "localhost") throw new Error("Blocked private hostname: localhost");
+  if (!host) {throw new Error("Missing hostname in media URL");}
+  if (host === "localhost") {throw new Error("Blocked private hostname: localhost");}
 
   if (net.isIP(host) === 4 && isPrivateIpv4(host)) {
     throw new Error(`Blocked private IPv4 target: ${host}`);
@@ -499,7 +499,7 @@ async function ensurePublicTarget(urlObj: URL): Promise<void> {
   }
 
   const resolved = await lookup(host, { all: true, verbatim: true });
-  if (!resolved.length) throw new Error(`Failed to resolve hostname: ${host}`);
+  if (!resolved.length) {throw new Error(`Failed to resolve hostname: ${host}`);}
   for (const addr of resolved) {
     if (addr.family === 4 && isPrivateIpv4(addr.address)) {
       throw new Error(`Blocked private IPv4 resolution for ${host}: ${addr.address}`);
