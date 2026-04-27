@@ -1,5 +1,7 @@
-import type { OpenClawConfig, GroupToolPolicyConfig } from "openclaw/plugin-sdk";
-import { DEFAULT_ACCOUNT_ID, formatPairingApproveHint, resolveToolsBySender } from "openclaw/plugin-sdk";
+import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
+import type { GroupToolPolicyConfig } from "openclaw/plugin-sdk/channel-policy";
+import { DEFAULT_ACCOUNT_ID, formatPairingApproveHint } from "openclaw/plugin-sdk/core";
+import { resolveToolsBySender } from "openclaw/plugin-sdk/channel-policy";
 import type {
   XmppConfig,
   XmppGroupConfig,
@@ -10,7 +12,7 @@ import type {
   ChannelAccountSnapshot,
   ThreadingToolContext,
 } from "./types.js";
-import { xmppChannelConfigSchema, bareJid, isCredentialReference } from "./config-schema.js";
+import { xmppChannelConfigSchema, bareJid, hasXmppCredentials } from "./config-schema.js";
 import { startXmppConnection } from "./monitor.js";
 import { sendXmppMessage, sendXmppMedia } from "./outbound.js";
 import { xmppOnboardingAdapter } from "./onboarding.js";
@@ -44,7 +46,7 @@ function getConfig(cfg: OpenClawConfig, accountId?: string): XmppConfig {
  */
 function isConfigured(cfg: OpenClawConfig, accountId?: string): boolean {
   const config = getConfig(cfg, accountId);
-  return Boolean(config.jid && config.password && isCredentialReference(config.password));
+  return hasXmppCredentials(config);
 }
 
 /**
@@ -63,7 +65,7 @@ const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\
 /**
  * XMPP Channel Plugin Definition
  */
-export const xmppPlugin = {
+export const xmppPlugin: any = {
   id: "xmpp",
   meta: {
     id: "xmpp",
@@ -81,7 +83,7 @@ export const xmppPlugin = {
   configSchema: xmppChannelConfigSchema(),
   
   capabilities: {
-    chatTypes: ["direct", "group"] as const,
+    chatTypes: ["direct", "group"],
     reactions: true, // XEP-0444
     threads: false,
     media: false, // Phase 3: XEP-0363
@@ -170,14 +172,14 @@ export const xmppPlugin = {
     disabledReason: (): string => "disabled",
     
     isConfigured: (account: ResolvedXmppAccount): boolean =>
-      Boolean(account.config?.jid && account.config?.password && isCredentialReference(account.config.password)),
+      hasXmppCredentials(account.config ?? {}),
     unconfiguredReason: (): string => "not configured",
     
     describeAccount: (account: ResolvedXmppAccount): XmppAccountDescriptor => ({
       accountId: account.accountId,
       name: account.config?.name || "XMPP",
       enabled: account.enabled,
-      configured: Boolean(account.config?.jid && account.config?.password && isCredentialReference(account.config.password)),
+      configured: hasXmppCredentials(account.config ?? {}),
       dmPolicy: account.config?.dmPolicy,
       allowFrom: account.config?.allowFrom,
     }),
@@ -481,7 +483,7 @@ export const xmppPlugin = {
     },
     
     buildChannelSummary: async ({ account, snapshot }: { account: ResolvedXmppAccount; snapshot?: ChannelAccountSnapshot }) => ({
-      configured: Boolean(account.config?.jid && account.config?.password && isCredentialReference(account.config.password)),
+      configured: hasXmppCredentials(account.config ?? {}),
       enabled: account.enabled,
       running: snapshot?.running ?? false,
       connected: snapshot?.connected ?? false,
@@ -495,7 +497,7 @@ export const xmppPlugin = {
       accountId: account.accountId,
       name: account.config?.name,
       enabled: account.enabled,
-      configured: Boolean(account.config?.jid && account.config?.password && isCredentialReference(account.config.password)),
+      configured: hasXmppCredentials(account.config ?? {}),
       running: runtime?.running ?? false,
       connected: runtime?.connected ?? false,
       lastStartAt: runtime?.lastStartAt ?? null,

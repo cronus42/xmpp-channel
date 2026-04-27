@@ -2,8 +2,8 @@
  * XMPP actions handler (reactions, polls, etc.)
  */
 
-import type { OpenClawConfig } from "openclaw/plugin-sdk";
-import { jsonResult } from "openclaw/plugin-sdk";
+import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
+import { jsonResult } from "openclaw/plugin-sdk/core";
 import type { ChannelMessageActionName } from "./types.js";
 import { getActiveClient } from "./monitor.js";
 import { resolveXmppAccount } from "./accounts.js";

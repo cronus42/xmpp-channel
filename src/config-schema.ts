@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildChannelConfigSchema } from "openclaw/plugin-sdk";
+import { buildChannelConfigSchema } from "openclaw/plugin-sdk/core";
 
 /**
  * XMPP action configuration schema
@@ -143,7 +143,7 @@ export type XmppConfigSchemaType = z.infer<typeof XmppConfigSchema>;
 /**
  * Build channel config schema using OpenClaw SDK helper
  */
-export function xmppChannelConfigSchema() {
+export function xmppChannelConfigSchema(): ReturnType<typeof buildChannelConfigSchema> {
   return buildChannelConfigSchema(XmppConfigSchema);
 }
 
@@ -182,6 +182,15 @@ export function isCredentialReference(value: string | undefined | null): boolean
   if (raw.startsWith("env:")) {return true;}
   if (/^\$\{[A-Z0-9_]+\}$/.test(raw)) {return true;}
   return false;
+}
+/**
+ * Check if account credentials are present (JID + password).
+ * Password can be either an env reference or plaintext.
+ */
+export function hasXmppCredentials(config: { jid?: string | null; password?: string | null }): boolean {
+  const jid = String(config.jid ?? "").trim();
+  const password = String(config.password ?? "").trim();
+  return Boolean(jid && password);
 }
 
 /**

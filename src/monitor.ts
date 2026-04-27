@@ -8,8 +8,9 @@
 import { client, xml } from "@xmpp/client";
 import type { Element } from "@xmpp/client";
 import { createRequire } from "module";
+import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
 import type { XmppConfig, GatewayStartContext, XmppInboundMessage, Logger } from "./types.js";
-import { resolveServer, extractUsername, bareJid, resolveCredentialReference } from "./config-schema.js";
+import { resolveServer, extractUsername, bareJid, isCredentialReference, resolveCredentialReference } from "./config-schema.js";
 import { parsePepEvent, type PepItem } from "./pep.js";
 
 // Import from split modules
@@ -190,14 +191,21 @@ export async function startXmppConnection(ctx: GatewayStartContext): Promise<voi
   const config = account.config;
 
   log?.debug?.(`[${accountId}] Gateway context: hasSetStatus=${!!setStatus}`);
-
-  if (!config.jid || !config.password) {
+  const jid = String(config.jid ?? "").trim();
+  const passwordInput = String(config.password ?? "").trim();
+  if (!jid || !passwordInput) {
     throw new Error("XMPP jid and password are required");
   }
-
-  const server = resolveServer(config);
-  const username = extractUsername(config.jid);
-  const resolvedPassword = resolveCredentialReference(config.password);
+  const server = resolveServer({ jid, server: config.server });
+  const username = extractUsername(jid);
+  const resolvedPassword = isCredentialReference(passwordInput)
+    ? resolveCredentialReference(passwordInput)
+    : passwordInput;
+  if (!isCredentialReference(passwordInput)) {
+    log?.warn?.(
+      `[${accountId}] XMPP password is configured as plaintext. Prefer env:VAR or \${VAR} to avoid storing credentials in config.`
+    );
+  }
   
   // Generate unique resource per session to prevent connection conflicts on restart
   const sessionResource = config.resource ?? `openclaw-${generateSessionId()}`;
@@ -563,7 +571,7 @@ function setupMessageHandler(
                 isGroup: isGroupchat,
                 roomJid,
                 senderNick,
-                cfg,
+                cfg: cfg as OpenClawConfig,
                 accountId,
                 config,
                 log,
@@ -630,7 +638,7 @@ function setupMessageHandler(
         isGroup: isGroupchat,
         roomJid,
         senderNick,
-        cfg,
+        cfg: cfg as OpenClawConfig,
         accountId,
         config,
         log,
@@ -725,6 +733,6 @@ function setupMessageHandler(
       senderJidForOmemo: bareJid(from),
     };
 
-    await handleInboundMessage(message, cfg, accountId, config, log, setStatus);
+    await handleInboundMessage(message, cfg as OpenClawConfig, accountId, config, log, setStatus);
   });
 }

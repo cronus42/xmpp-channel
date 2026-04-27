@@ -1,8 +1,8 @@
-import type { OpenClawConfig, WizardPrompter } from "openclaw/plugin-sdk";
-import { formatDocsLink, DEFAULT_ACCOUNT_ID, normalizeAccountId, promptAccountId } from "openclaw/plugin-sdk";
+import type { OpenClawConfig, WizardPrompter } from "openclaw/plugin-sdk/setup";
+import { formatDocsLink, DEFAULT_ACCOUNT_ID, normalizeAccountId, promptAccountId } from "openclaw/plugin-sdk/setup";
 import type { ChannelOnboardingAdapter, ChannelOnboardingStatus, ChannelOnboardingResult } from "./types.js";
 import { listXmppAccountIds, resolveDefaultXmppAccountId, resolveXmppAccount } from "./accounts.js";
-import { bareJid, isCredentialReference } from "./config-schema.js";
+import { bareJid, hasXmppCredentials, isCredentialReference } from "./config-schema.js";
 
 const channel = "xmpp" as const;
 
@@ -57,19 +57,23 @@ async function promptXmppCredentials(
     },
   });
 
-  const passwordRef = await prompter.text({
-    message: "XMPP password reference (env:VAR or ${VAR})",
+  const passwordInput = await prompter.text({
+    message: "XMPP password (preferred: env:VAR or ${VAR})",
     placeholder: "env:XMPP_PASSWORD",
     initialValue: existing?.config?.password,
     validate: (value) => {
       const raw = String(value ?? "").trim();
-      if (!raw) {return "Password reference is required";}
-      if (!isCredentialReference(raw)) {
-        return "Use env:VAR or ${VAR}; plaintext passwords are not allowed";
-      }
+      if (!raw) {return "Password is required";}
       return undefined;
     },
   });
+  const trimmedPassword = passwordInput.trim();
+  if (!isCredentialReference(trimmedPassword)) {
+    await prompter.note(
+      "Using plaintext password in config. Prefer env:VAR or ${VAR} to avoid storing credentials in plain text.",
+      "XMPP password warning"
+    );
+  }
 
   const server = await prompter.text({
     message: "XMPP server (leave empty to derive from JID)",
@@ -79,7 +83,7 @@ async function promptXmppCredentials(
 
   const updates: Record<string, unknown> = {
     jid: jid.trim(),
-    password: passwordRef.trim(),
+    password: trimmedPassword,
   };
 
   if (server?.trim()) {
@@ -223,7 +227,7 @@ export const xmppOnboardingAdapter: ChannelOnboardingAdapter = {
     const defaultAccountId = resolveDefaultXmppAccountId(cfg);
     const accountId = overrideId ? normalizeAccountId(overrideId) : defaultAccountId;
     const account = resolveXmppAccount({ cfg, accountId });
-    const configured = Boolean(account?.config?.jid && account?.config?.password && isCredentialReference(account.config.password));
+    const configured = hasXmppCredentials(account?.config ?? {});
     const accountLabel = accountId === DEFAULT_ACCOUNT_ID ? "default" : accountId;
 
     return {

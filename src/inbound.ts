@@ -11,6 +11,7 @@ import { getXmppRuntime } from "./runtime.js";
 import { normalizeAllowFrom, isSenderAllowed } from "./normalize.js";
 import { sendXmppMedia } from "./outbound.js";
 import type { XmppConfig, XmppInboundMessage, Logger, ChannelAccountStatusPatch } from "./types.js";
+import type { OpenClawConfig } from "openclaw/plugin-sdk/core";
 import { activeClients, recordInboundMessageId } from "./state.js";
 import { sendChatState, sendChatMarker } from "./chat-state.js";
 import { isOmemoEnabled, encryptOmemoMessage, encryptMucOmemoMessage, isRoomOmemoCapable, buildOmemoMessageStanza } from "./omemo/index.js";
@@ -39,7 +40,7 @@ function sanitizeReactionMessageId(rawId: string): string | null {
  */
 export async function handleInboundMessage(
   message: XmppInboundMessage,
-  cfg: unknown,
+  cfg: OpenClawConfig,
   accountId: string,
   config: XmppConfig,
   log?: Logger,
@@ -153,12 +154,12 @@ export async function handleInboundMessage(
     channel: "xmpp",
     accountId,
     peer: {
-      kind: message.isGroup ? "group" : "dm",
+      kind: message.isGroup ? "group" : "direct",
       id: message.isGroup ? message.roomJid! : senderBare,
     },
   });
 
-  const storePath = rt.channel.session.resolveStorePath((cfg as { session?: { store?: string } }).session?.store, {
+  const storePath = rt.channel.session.resolveStorePath(cfg.session?.store, {
     agentId: route.agentId,
   });
 
@@ -481,7 +482,7 @@ export async function handleInboundReaction(params: {
   isGroup: boolean;
   roomJid?: string;
   senderNick?: string;
-  cfg: unknown;
+  cfg: OpenClawConfig;
   accountId: string;
   config: XmppConfig;
   log?: Logger;
@@ -592,15 +593,11 @@ export async function handleInboundReaction(params: {
     channel: "xmpp",
     accountId,
     peer: {
-      kind: isGroup ? "group" : "dm",
+      kind: isGroup ? "group" : "direct",
       id: isGroup ? roomJid! : senderBare,
     },
   });
-
-  const storePath = rt.channel.session.resolveStorePath(
-    (cfg as { session?: { store?: string } }).session?.store,
-    { agentId: route.agentId }
-  );
+  const storePath = rt.channel.session.resolveStorePath(cfg.session?.store, { agentId: route.agentId });
 
   // Build the context with reaction info
   const ctx = rt.channel.reply.finalizeInboundContext({
