@@ -8,7 +8,7 @@
 import { client, xml } from "@xmpp/client";
 import type { Element } from "@xmpp/client";
 import type { XmppConfig, GatewayStartContext, XmppInboundMessage, Logger } from "./types.js";
-import { resolveServer, extractUsername, bareJid } from "./config-schema.js";
+import { resolveServer, extractUsername, bareJid, resolveCredentialReference } from "./config-schema.js";
 import { parsePepEvent, type PepItem } from "./pep.js";
 
 // Import from split modules
@@ -129,6 +129,7 @@ export async function startXmppConnection(ctx: GatewayStartContext): Promise<voi
 
   const server = resolveServer(config);
   const username = extractUsername(config.jid);
+  const resolvedPassword = resolveCredentialReference(config.password);
   
   // Generate unique resource per session to prevent connection conflicts on restart
   const sessionResource = config.resource ?? `openclaw-${generateSessionId()}`;
@@ -155,7 +156,7 @@ export async function startXmppConnection(ctx: GatewayStartContext): Promise<voi
     service: `xmpp://${server}:${config.port ?? 5222}`,
     domain: server,
     username,
-    password: config.password,
+    password: resolvedPassword,
     resource: sessionResource,
   });
 
@@ -238,7 +239,9 @@ export async function startXmppConnection(ctx: GatewayStartContext): Promise<voi
     // Initialize OMEMO if enabled
     if (config.omemo?.enabled) {
       try {
-        await initializeOmemo(accountId, config.jid, config.omemo.deviceLabel, log);
+        await initializeOmemo(accountId, config.jid, config.omemo.deviceLabel, log, {
+          maxDevicesPerJid: config.omemo.maxDevicesPerJid,
+        });
       } catch (err) {
         log?.error?.(`[${accountId}] OMEMO initialization failed: ${err instanceof Error ? err.message : String(err)}`);
         // Continue without OMEMO - non-fatal

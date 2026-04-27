@@ -21,6 +21,16 @@ export interface XmppActionConfig {
 }
 
 /**
+ * Media security configuration
+ */
+export interface XmppMediaSecurityConfig {
+  /** Allow file:// URLs for local file reads (default: false) */
+  allowFileUrls?: boolean;
+  /** Allowlisted local roots for file reads */
+  allowedLocalPaths?: string[];
+}
+
+/**
  * Tool policy for group tool access control
  */
 export interface XmppToolPolicy {
@@ -52,6 +62,8 @@ export interface XmppOmemoConfig {
   enabled?: boolean;
   /** Device label for this bot instance */
   deviceLabel?: string;
+  /** Maximum devices per JID to encrypt for (default: 10) */
+  maxDevicesPerJid?: number;
 }
 
 /**
@@ -100,6 +112,8 @@ export interface XmppConfig {
   sendReadReceipts?: boolean;
   /** OMEMO encryption configuration */
   omemo?: XmppOmemoConfig;
+  /** Media/file security configuration */
+  media?: XmppMediaSecurityConfig;
   /** Multi-account configuration */
   accounts?: Record<string, XmppConfig>;
 }

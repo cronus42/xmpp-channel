@@ -105,6 +105,44 @@
         "default": true,
         "description": "Send read receipts (XEP-0333 chat markers) for incoming messages"
       },
+      "omemo": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable OMEMO encryption (XEP-0384)"
+          },
+          "deviceLabel": {
+            "type": "string",
+            "description": "Display label for this device in OMEMO device list"
+          },
+          "maxDevicesPerJid": {
+            "type": "number",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum devices per JID to encrypt for"
+          }
+        },
+        "description": "OMEMO encryption settings"
+      },
+      "media": {
+        "type": "object",
+        "properties": {
+          "allowFileUrls": {
+            "type": "boolean",
+            "default": false,
+            "description": "Allow file:// URLs for local media reads"
+          },
+          "allowedLocalPaths": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Allowlisted local roots for reading local media files"
+          }
+        },
+        "description": "Media/file read security settings"
+      },
       "accounts": {
         "type": "object",
         "additionalProperties": {
@@ -129,7 +167,24 @@
             "messagePrefix": { "type": "string", "description": "Inbound message prefix" },
             "heartbeatVisibility": { "type": "string", "enum": ["visible", "hidden"], "description": "Heartbeat visibility" },
             "groupSettings": { "type": "object", "description": "Per-group settings" },
-            "sendReadReceipts": { "type": "boolean", "default": true, "description": "Send read receipts (XEP-0333)" }
+            "sendReadReceipts": { "type": "boolean", "default": true, "description": "Send read receipts (XEP-0333)" },
+            "omemo": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false, "description": "Enable OMEMO encryption (XEP-0384)" },
+                "deviceLabel": { "type": "string", "description": "Display label for this device in OMEMO device list" },
+                "maxDevicesPerJid": { "type": "number", "default": 10, "minimum": 1, "maximum": 100, "description": "Maximum devices per JID to encrypt for" }
+              },
+              "description": "OMEMO encryption settings"
+            },
+            "media": {
+              "type": "object",
+              "properties": {
+                "allowFileUrls": { "type": "boolean", "default": false, "description": "Allow file:// URLs for local media reads" },
+                "allowedLocalPaths": { "type": "array", "items": { "type": "string" }, "description": "Allowlisted local roots for local media files" }
+              },
+              "description": "Media/file read security settings"
+            }
           }
         },
         "description": "Multi-account configuration"

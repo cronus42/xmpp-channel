@@ -287,12 +287,12 @@ async function deliverReply(
         const url = new URL(mediaUrl);
         if (url.protocol === "file:") {
           const { readFileUrl } = await import("./file-read.js");
-          resolvedMedia = readFileUrl(mediaUrl, log);
+          resolvedMedia = readFileUrl(mediaUrl, log, { accountId, config });
         }
       } catch {
         // Not a valid URL — treat as local file path
         const { readLocalFile } = await import("./file-read.js");
-        const result = readLocalFile(mediaUrl, log);
+        const result = readLocalFile(mediaUrl, log, { accountId, config });
         if (!result) {
           log?.error?.(`[XMPP] File not found: ${mediaUrl}`);
           continue;
