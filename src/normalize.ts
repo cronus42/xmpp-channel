@@ -114,18 +114,23 @@ export interface NormalizedAllowFrom {
  */
 export function normalizeAllowFrom(list?: string[]): NormalizedAllowFrom {
   if (!list || list.length === 0) {
-    return { entries: [], hasWildcard: true }; // Empty = allow all
+    return { entries: [], hasWildcard: false }; // Empty = allow none
   }
-  const entries = list.map((jid) => bareJid(jid).toLowerCase());
+  const entries = list
+    .map((jid) => String(jid ?? "").trim())
+    .filter(Boolean)
+    .map((jid) => jid.replace(/^(xmpp|jabber):/i, ""))
+    .map((jid) => bareJid(jid).toLowerCase());
   const hasWildcard = entries.includes("*");
-  return { entries, hasWildcard };
+  return { entries: entries.filter((entry) => entry !== "*"), hasWildcard };
 }
 
 /**
  * Check if sender is allowed based on normalized allowFrom
  */
 export function isSenderAllowed(allowFrom: NormalizedAllowFrom, senderJid: string): boolean {
-  if (allowFrom.hasWildcard || allowFrom.entries.length === 0) return true;
+  if (allowFrom.hasWildcard) return true;
+  if (!senderJid.trim()) return false;
   const normalized = bareJid(senderJid).toLowerCase();
   return allowFrom.entries.includes(normalized);
 }
