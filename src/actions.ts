@@ -223,6 +223,12 @@ export async function handleXmppAction(params: {
  * XMPP Message Actions adapter
  */
 export const xmppMessageActions = {
+  describeMessageTool: ({ cfg }: { cfg: OpenClawConfig }) => ({
+    actions: listXmppActions(cfg),
+    capabilities: [],
+    schema: [],
+    mediaSourceParams: [],
+  }),
   listActions: ({ cfg }: { cfg: OpenClawConfig }) => listXmppActions(cfg),
 
   supportsAction: ({ action }: { action: string }) => supportsXmppAction(action),
